@@ -3,13 +3,13 @@
 
 ## About Me
 
-- **Name:** [Your Full Name]
+- **Name:** [Sayed Hashimi]
 
-- **GitHub Username:** [Your GitHub Username]
+- **GitHub Username:** [nawidhashimi786-ui]
 
-- **Major:** [Your Major]
+- **Major:** [Cybersecurity}
 
-- **Semester:** [Current Semester]
+- **Semester:** [Spring Quarter]
 
 
 ## About This Course
