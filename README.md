@@ -33,3 +33,8 @@ infrastructure as code, and cloud deployment.
 ## Fun Fact
 
 [Share one fun fact about yourself]
+
+## My Week 2 Infrastructure
+
+Runner VM: sayed-runner
+Runner IP: 192.168.1.169
