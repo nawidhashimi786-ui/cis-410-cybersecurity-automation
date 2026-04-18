@@ -10,10 +10,10 @@ jobs:
     steps:
       - name: Install Docker on Dev VM
         run: |
-          echo "${{ secrets.DEV_SSH_KEY }}" > /tmp/key
+          printf '%s\n' "${{ secrets.DEV_SSH_KEY }}" > /tmp/key
           chmod 600 /tmp/key
 
-          ssh -i /tmp/key -o StrictHostKeyChecking=no ${{ secrets.DEV_USER }}@${{ secrets.DEV_HOST }} << 'EOF'
+          ssh -o StrictHostKeyChecking=no -i /tmp/key ${{ secrets.DEV_USER }}@${{ secrets.DEV_HOST }} << 'EOF'
           set -e
 
           if ! command -v docker >/dev/null 2>&1; then
