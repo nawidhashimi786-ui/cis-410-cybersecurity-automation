@@ -1,1 +1,38 @@
+name: Setup Dev Server
 
+on:
+  workflow_dispatch:
+
+jobs:
+  setup:
+    runs-on: self-hosted
+
+    steps:
+      - name: Install Docker on Dev VM
+        run: |
+          echo "${{ secrets.DEV_SSH_KEY }}" > /tmp/key
+          chmod 600 /tmp/key
+
+          ssh -i /tmp/key -o StrictHostKeyChecking=no ${{ secrets.DEV_USER }}@${{ secrets.DEV_HOST }} << 'EOF'
+          set -e
+
+          if ! command -v docker >/dev/null 2>&1; then
+            echo "Installing Docker"
+            curl -fsSL https://get.docker.com -o get-docker.sh
+            sudo sh get-docker.sh
+            sudo usermod -aG docker $(whoami)
+            sudo mkdir -p /opt/app
+            sudo chown $(whoami):$(whoami) /opt/app
+            rm -f get-docker.sh
+          else
+            echo "Docker already installed"
+            sudo mkdir -p /opt/app
+            sudo chown $(whoami):$(whoami) /opt/app
+          fi
+
+          docker --version
+          docker compose version
+          ls -ld /opt/app
+          EOF
+
+          rm -f /tmp/key
