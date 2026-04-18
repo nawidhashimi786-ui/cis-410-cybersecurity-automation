@@ -1,1 +1,45 @@
+name: Deploy Dev
 
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: self-hosted
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Copy files to Dev VM
+        run: |
+          echo "${{ secrets.DEV_SSH_KEY }}" > /tmp/key
+          chmod 600 /tmp/key
+
+          scp -i /tmp/key -o StrictHostKeyChecking=no -r \
+            app/ Dockerfile docker-compose.yml \
+            ${{ secrets.DEV_USER }}@${{ secrets.DEV_HOST }}:/opt/app/
+
+          rm -f /tmp/key
+
+      - name: Deploy container
+        run: |
+          echo "${{ secrets.DEV_SSH_KEY }}" > /tmp/key
+          chmod 600 /tmp/key
+
+          ssh -i /tmp/key -o StrictHostKeyChecking=no ${{ secrets.DEV_USER }}@${{ secrets.DEV_HOST }} << 'EOF'
+          set -e
+          cd /opt/app
+          sudo docker compose down --remove-orphans || true
+          sudo docker compose up -d --build
+          sudo docker compose ps
+          EOF
+
+          rm -f /tmp/key
+
+      - name: Health check
+        run: |
+          sleep 5
+          curl -f http://${{ secrets.DEV_HOST }}:5000/health
