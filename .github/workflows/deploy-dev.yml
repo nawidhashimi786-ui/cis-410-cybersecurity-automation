@@ -1,1 +1,33 @@
+name: Deploy — Dev
 
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Copy app files to Dev VM
+        run: |
+          echo "${{ secrets.DEV_SSH_KEY }}" > /tmp/deploy_key
+          chmod 600 /tmp/deploy_key
+
+          scp -i /tmp/deploy_key -o StrictHostKeyChecking=no -r app Dockerfile docker-compose.yml ${{ secrets.DEV_USER }}@${{ secrets.DEV_HOST }}:/home/${{ secrets.DEV_USER }}/
+
+      - name: Deploy Flask container
+        run: |
+          ssh -i /tmp/deploy_key -o StrictHostKeyChecking=no ${{ secrets.DEV_USER }}@${{ secrets.DEV_HOST }} << 'EOF'
+            cd /home/${{ secrets.DEV_USER }}
+            docker compose down || true
+            docker compose up -d --build
+          EOF
+
+      - name: Smoke test
+        run: |
+          sleep 5
+          curl http://${{ secrets.DEV_HOST }}:5000/health
