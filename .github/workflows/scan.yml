@@ -1,3 +1,4 @@
+
 # .github/workflows/scan.yml
 # ─────────────────────────────────────────────────────────────────────────────
 # Security gate — runs on every pull request to main.
@@ -138,3 +139,4 @@ jobs:
             ${{ secrets.DEV_USER }}@${{ secrets.DEV_HOST }} \
             "sudo docker rmi snyk-scan-target 2>/dev/null || true; rm -rf /tmp/snyk-scan /tmp/snyk-cli /tmp/image.tar" || true
           rm -f /tmp/scan_key
+
